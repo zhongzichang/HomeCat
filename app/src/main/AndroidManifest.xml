@@ -38,6 +38,12 @@
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity>
+
+        <service
+            android:name=".MessageAgent"
+            android:enabled="true"
+            android:exported="true" >
+        </service>
     </application>
 
     <!-- To auto-complete the email text field in the login form with the user's emails -->
