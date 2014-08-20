@@ -36,6 +36,7 @@ public class MainActivity extends ActionBarActivity {
     protected void onStart() {
         super.onStart();
         new HttpRequestTask().execute();
+        new AuthCheckRequestTask().execute();
     }
 
     @Override
@@ -126,6 +127,8 @@ public class MainActivity extends ActionBarActivity {
             TextView greetingContentText = (TextView) findViewById(R.id.content_value);
             greetingIdText.setText(greeting.getId());
             greetingContentText.setText(greeting.getContent());*/
+            Log.i("MainActivity", result.toString());
+
         }
 
     }

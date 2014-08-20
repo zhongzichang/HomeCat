@@ -5,4 +5,11 @@ package com.osgsquare.homecat.rest;
  */
 public class AuthCheckResult {
     public boolean logined;
+
+    @Override
+    public String toString() {
+        return "AuthCheckResult{" +
+                "logined=" + logined +
+                '}';
+    }
 }
