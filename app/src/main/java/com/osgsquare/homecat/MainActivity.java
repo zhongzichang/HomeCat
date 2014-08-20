@@ -12,6 +12,7 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.TextView;
 
+import com.osgsquare.homecat.rest.AuthCheckResult;
 import com.osgsquare.homecat.rest.Greeting;
 
 import org.springframework.http.converter.json.MappingJackson2HttpMessageConverter;
@@ -97,6 +98,34 @@ public class MainActivity extends ActionBarActivity {
             TextView greetingContentText = (TextView) findViewById(R.id.content_value);
             greetingIdText.setText(greeting.getId());
             greetingContentText.setText(greeting.getContent());
+        }
+
+    }
+
+
+    private class AuthCheckRequestTask extends AsyncTask<Void, Void, AuthCheckResult> {
+        @Override
+        protected AuthCheckResult doInBackground(Void... params) {
+            try {
+                final String url = Config.BASE_URL + "/check";
+                RestTemplate restTemplate = new RestTemplate();
+                restTemplate.getMessageConverters().add(new MappingJackson2HttpMessageConverter());
+                AuthCheckResult result = restTemplate.getForObject(url, AuthCheckResult.class);
+                return result;
+            } catch (Exception e) {
+                Log.e("MainActivity", e.getMessage(), e);
+            }
+
+            return null;
+        }
+
+        @Override
+        protected void onPostExecute(AuthCheckResult result) {
+            /*
+            TextView greetingIdText = (TextView) findViewById(R.id.id_value);
+            TextView greetingContentText = (TextView) findViewById(R.id.content_value);
+            greetingIdText.setText(greeting.getId());
+            greetingContentText.setText(greeting.getContent());*/
         }
 
     }
