@@ -1,5 +1,7 @@
 package com.osgsquare.homecat;
 
+import android.content.Context;
+import android.content.SharedPreferences;
 import android.os.AsyncTask;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
@@ -15,8 +17,16 @@ import android.widget.TextView;
 import com.osgsquare.homecat.rest.AuthCheckResult;
 import com.osgsquare.homecat.rest.Greeting;
 
+import org.springframework.http.ContentCodingType;
+import org.springframework.http.HttpEntity;
+import org.springframework.http.HttpHeaders;
+import org.springframework.http.HttpMethod;
+import org.springframework.http.MediaType;
+import org.springframework.http.ResponseEntity;
 import org.springframework.http.converter.json.MappingJackson2HttpMessageConverter;
 import org.springframework.web.client.RestTemplate;
+
+import java.util.Collections;
 
 public class MainActivity extends ActionBarActivity {
 
@@ -109,9 +119,25 @@ public class MainActivity extends ActionBarActivity {
         protected AuthCheckResult doInBackground(Void... params) {
             try {
                 final String url = Config.BASE_URL + "/check";
+
+                // get cookie
+                SharedPreferences prefs = getSharedPreferences(Config.PREFS_PRIVATE_DATA, Context.MODE_PRIVATE);
+                String cookie = prefs.getString(Config.PREFS_KEY_USER_COOKIE,"no data");HttpHeaders requestHeaders = new HttpHeaders();
+
+                // set headers
+                requestHeaders.setContentType(MediaType.APPLICATION_FORM_URLENCODED);
+                requestHeaders.setAccept(Collections.singletonList(new MediaType("application", "json")));
+                requestHeaders.setAcceptEncoding(ContentCodingType.GZIP);
+                requestHeaders.set("Cookie", cookie);
+                HttpEntity requestEntity = new HttpEntity(requestHeaders);
+
                 RestTemplate restTemplate = new RestTemplate();
                 restTemplate.getMessageConverters().add(new MappingJackson2HttpMessageConverter());
-                AuthCheckResult result = restTemplate.getForObject(url, AuthCheckResult.class);
+
+
+                ResponseEntity<AuthCheckResult> response = restTemplate.exchange(url, HttpMethod.GET, requestEntity, AuthCheckResult.class);
+                AuthCheckResult result = response.getBody();
+
                 return result;
             } catch (Exception e) {
                 Log.e("MainActivity", e.getMessage(), e);
