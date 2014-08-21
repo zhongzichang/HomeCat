@@ -14,6 +14,7 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.TextView;
 
+import com.osgsquare.homecat.agents.IAuthAgent;
 import com.osgsquare.homecat.rest.AuthCheckResult;
 import com.osgsquare.homecat.rest.Greeting;
 
@@ -27,8 +28,11 @@ import org.springframework.http.converter.json.MappingJackson2HttpMessageConvert
 import org.springframework.web.client.RestTemplate;
 
 import java.util.Collections;
+import java.util.List;
 
 public class MainActivity extends ActionBarActivity {
+
+    private IAuthAgent authAgent;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -122,9 +126,10 @@ public class MainActivity extends ActionBarActivity {
 
                 // get cookie
                 SharedPreferences prefs = getSharedPreferences(Config.PREFS_PRIVATE_DATA, Context.MODE_PRIVATE);
-                String cookie = prefs.getString(Config.PREFS_KEY_USER_COOKIE,"no data");HttpHeaders requestHeaders = new HttpHeaders();
+                String cookie = prefs.getString(Config.PREFS_KEY_USER_COOKIE,"no data");
 
                 // set headers
+                HttpHeaders requestHeaders = new HttpHeaders();
                 requestHeaders.setContentType(MediaType.APPLICATION_FORM_URLENCODED);
                 requestHeaders.setAccept(Collections.singletonList(new MediaType("application", "json")));
                 requestHeaders.setAcceptEncoding(ContentCodingType.GZIP);
@@ -134,11 +139,21 @@ public class MainActivity extends ActionBarActivity {
                 RestTemplate restTemplate = new RestTemplate();
                 restTemplate.getMessageConverters().add(new MappingJackson2HttpMessageConverter());
 
-
                 ResponseEntity<AuthCheckResult> response = restTemplate.exchange(url, HttpMethod.GET, requestEntity, AuthCheckResult.class);
+
+                HttpHeaders reponseHeaders = response.getHeaders();
+                List<String> val = reponseHeaders.get("Set-Cookie");
+                if(null != val) {
+                    SharedPreferences.Editor ed = prefs.edit();
+                    cookie = val.get(0);
+                    ed.putString(Config.PREFS_KEY_USER_COOKIE, cookie);
+                    ed.commit();
+                }
+
                 AuthCheckResult result = response.getBody();
 
                 return result;
+
             } catch (Exception e) {
                 Log.e("MainActivity", e.getMessage(), e);
             }
