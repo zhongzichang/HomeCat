@@ -4,7 +4,7 @@ import com.google.inject.Inject;
 import com.osgsquare.homecat.Config;
 import com.osgsquare.homecat.agents.IAuthAgent;
 import com.osgsquare.homecat.model.AuthCheckResult;
-import com.osgsquare.homecat.model.Result;
+import com.osgsquare.homecat.model.LoginResult;
 import com.osgsquare.homecat.net.RestHelper;
 
 import org.springframework.http.HttpEntity;
@@ -44,9 +44,9 @@ public class AuthAgent implements IAuthAgent {
         body.add("password", password);
         HttpEntity reqEntity = RestHelper.createEntity();;
         RestTemplate restTemplate = RestHelper.createStatefulTemplate();
-        ResponseEntity<Result> response = restTemplate.exchange(url, HttpMethod.POST, reqEntity, Result.class);
-        Result result = response.getBody();
-        return result.success;
+        ResponseEntity<LoginResult> response = restTemplate.exchange(url, HttpMethod.POST, reqEntity, LoginResult.class);
+        LoginResult result = response.getBody();
+        return result.logined;
     }
 
 
