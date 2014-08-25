@@ -5,4 +5,5 @@ package com.osgsquare.homecat.agents;
  */
 public interface IAuthAgent {
     boolean check();
+    boolean login(String mobile, String password);
 }

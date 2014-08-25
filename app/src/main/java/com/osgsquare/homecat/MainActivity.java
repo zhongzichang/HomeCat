@@ -1,11 +1,9 @@
 package com.osgsquare.homecat;
 
-import android.content.Context;
-import android.content.SharedPreferences;
+import android.content.Intent;
 import android.os.AsyncTask;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
-import android.support.v7.app.ActionBarActivity;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.Menu;
@@ -14,25 +12,19 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.TextView;
 
+import com.google.inject.Inject;
 import com.osgsquare.homecat.agents.IAuthAgent;
-import com.osgsquare.homecat.rest.AuthCheckResult;
-import com.osgsquare.homecat.rest.Greeting;
+import com.osgsquare.homecat.model.Greeting;
 
-import org.springframework.http.ContentCodingType;
-import org.springframework.http.HttpEntity;
-import org.springframework.http.HttpHeaders;
-import org.springframework.http.HttpMethod;
-import org.springframework.http.MediaType;
-import org.springframework.http.ResponseEntity;
 import org.springframework.http.converter.json.MappingJackson2HttpMessageConverter;
 import org.springframework.web.client.RestTemplate;
 
-import java.util.Collections;
-import java.util.List;
+import roboguice.activity.RoboFragmentActivity;
 
-public class MainActivity extends ActionBarActivity {
 
-    private IAuthAgent authAgent;
+public class MainActivity extends RoboFragmentActivity {
+
+    @Inject IAuthAgent authAgent;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -50,7 +42,7 @@ public class MainActivity extends ActionBarActivity {
     protected void onStart() {
         super.onStart();
         new HttpRequestTask().execute();
-        new AuthCheckRequestTask().execute();
+        new AuthCheckTask().execute();
     }
 
     @Override
@@ -118,57 +110,33 @@ public class MainActivity extends ActionBarActivity {
     }
 
 
-    private class AuthCheckRequestTask extends AsyncTask<Void, Void, AuthCheckResult> {
+    private class AuthCheckTask extends AsyncTask<Void, Void, Boolean> {
         @Override
-        protected AuthCheckResult doInBackground(Void... params) {
+        protected Boolean doInBackground(Void... params) {
             try {
-                final String url = Config.BASE_URL + "/check";
 
-                // get cookie
-                SharedPreferences prefs = getSharedPreferences(Config.PREFS_PRIVATE_DATA, Context.MODE_PRIVATE);
-                String cookie = prefs.getString(Config.PREFS_KEY_USER_COOKIE,"no data");
-
-                // set headers
-                HttpHeaders requestHeaders = new HttpHeaders();
-                requestHeaders.setContentType(MediaType.APPLICATION_FORM_URLENCODED);
-                requestHeaders.setAccept(Collections.singletonList(new MediaType("application", "json")));
-                requestHeaders.setAcceptEncoding(ContentCodingType.GZIP);
-                requestHeaders.set("Cookie", cookie);
-                HttpEntity requestEntity = new HttpEntity(requestHeaders);
-
-                RestTemplate restTemplate = new RestTemplate();
-                restTemplate.getMessageConverters().add(new MappingJackson2HttpMessageConverter());
-
-                ResponseEntity<AuthCheckResult> response = restTemplate.exchange(url, HttpMethod.GET, requestEntity, AuthCheckResult.class);
-
-                HttpHeaders reponseHeaders = response.getHeaders();
-                List<String> val = reponseHeaders.get("Set-Cookie");
-                if(null != val) {
-                    SharedPreferences.Editor ed = prefs.edit();
-                    cookie = val.get(0);
-                    ed.putString(Config.PREFS_KEY_USER_COOKIE, cookie);
-                    ed.commit();
-                }
-
-                AuthCheckResult result = response.getBody();
-
-                return result;
+                return authAgent.check();
 
             } catch (Exception e) {
                 Log.e("MainActivity", e.getMessage(), e);
             }
-
             return null;
         }
 
         @Override
-        protected void onPostExecute(AuthCheckResult result) {
+        protected void onPostExecute(Boolean result) {
             /*
             TextView greetingIdText = (TextView) findViewById(R.id.id_value);
             TextView greetingContentText = (TextView) findViewById(R.id.content_value);
             greetingIdText.setText(greeting.getId());
             greetingContentText.setText(greeting.getContent());*/
             Log.i("MainActivity", result.toString());
+
+            if( !result ) {
+                // 还没有登录，跳转到登录页面
+                startActivity(new Intent(MainActivity.this, LoginActivity.class));
+
+            }
 
         }
 
