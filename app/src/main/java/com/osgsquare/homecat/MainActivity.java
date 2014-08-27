@@ -1,5 +1,6 @@
 package com.osgsquare.homecat;
 
+import android.content.Context;
 import android.content.Intent;
 import android.os.AsyncTask;
 import android.os.Bundle;
@@ -15,16 +16,28 @@ import android.widget.TextView;
 import com.google.inject.Inject;
 import com.osgsquare.homecat.agents.IAuthAgent;
 import com.osgsquare.homecat.model.Greeting;
+import com.osgsquare.homecat.net.RestHelper;
+import com.osgsquare.homecat.net.StatefullRestTemplate;
 
+import org.apache.http.client.CookieStore;
 import org.springframework.http.converter.json.MappingJackson2HttpMessageConverter;
 import org.springframework.web.client.RestTemplate;
 
+import java.io.FileInputStream;
+import java.io.FileOutputStream;
+import java.io.ObjectInput;
+import java.io.ObjectInputStream;
+import java.io.ObjectOutput;
+import java.io.ObjectOutputStream;
+
 import roboguice.activity.RoboFragmentActivity;
+import roboguice.util.Ln;
 
 
 public class MainActivity extends RoboFragmentActivity {
 
     @Inject IAuthAgent authAgent;
+    @Inject RestTemplate restTemplate;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -36,6 +49,8 @@ public class MainActivity extends RoboFragmentActivity {
                     .add(R.id.container, new PlaceholderFragment())
                     .commit();
         }
+
+        restoreCookie();
     }
 
     @Override
@@ -66,6 +81,13 @@ public class MainActivity extends RoboFragmentActivity {
         return super.onOptionsItemSelected(item);
     }
 
+    @Override
+    public void onDestroy(){
+        storeCookie();
+        super.onDestroy();
+        Ln.i("onDestroy==");
+    }
+
     /**
      * A placeholder fragment containing a simple view.
      */
@@ -93,7 +115,8 @@ public class MainActivity extends RoboFragmentActivity {
                 Greeting greeting = restTemplate.getForObject(url, Greeting.class);
                 return greeting;
             } catch (Exception e) {
-                Log.e("MainActivity", e.getMessage(), e);
+                //Log.e("MainActivity", e.getMessage(), e);
+                Ln.e(e);
             }
 
             return null;
@@ -114,9 +137,7 @@ public class MainActivity extends RoboFragmentActivity {
         @Override
         protected Boolean doInBackground(Void... params) {
             try {
-
                 return authAgent.check();
-
             } catch (Exception e) {
                 Log.e("MainActivity", e.getMessage(), e);
             }
@@ -125,21 +146,61 @@ public class MainActivity extends RoboFragmentActivity {
 
         @Override
         protected void onPostExecute(Boolean result) {
-            /*
-            TextView greetingIdText = (TextView) findViewById(R.id.id_value);
-            TextView greetingContentText = (TextView) findViewById(R.id.content_value);
-            greetingIdText.setText(greeting.getId());
-            greetingContentText.setText(greeting.getContent());*/
-            Log.i("MainActivity", result.toString());
-
+            Ln.i("MainActivity %s", result.toString());
             if( !result ) {
                 // 还没有登录，跳转到登录页面
                 startActivity(new Intent(MainActivity.this, LoginActivity.class));
-
             }
 
         }
 
     }
+
+    private void storeCookie() {
+        try {
+
+            CookieStore cookieStore = ((StatefullRestTemplate)restTemplate).getCookieStore();
+
+            FileOutputStream fos = openFileOutput(Config.COOKIE_FILE_NAME, Context.MODE_PRIVATE);
+            ObjectOutput output = new ObjectOutputStream(fos);
+            RestHelper.storeCookies(cookieStore, output);
+            Ln.i("cookieStore.toString():"+cookieStore.toString());
+            /*
+            List<Cookie> cookies = cookieStore.getCookies();
+            for(Cookie cookie : cookies) {
+                Ln.i("Store cookie === " + cookie.getName() + ":" + cookie.getValue());
+                output.writeObject(cookie);
+            }*/
+
+            output.close();
+
+        } catch (Exception e) {
+            Ln.e(e);
+        }
+    }
+
+    private void restoreCookie(){
+        try {
+
+            CookieStore cookieStore = ((StatefullRestTemplate)restTemplate).getCookieStore();
+
+            FileInputStream fis = openFileInput(Config.COOKIE_FILE_NAME);
+            ObjectInput input = new ObjectInputStream(fis);
+            RestHelper.restoreCookies(cookieStore, input);
+
+            Ln.i("cookieStore.toString():"+cookieStore.toString());
+            /*
+            while(input.available() > 0) {
+                Cookie cookie = (Cookie) (input.readObject());
+                Ln.i("Restore cookie === " + cookie.getName() + ":" + cookie.getValue());
+                cookieStore.addCookie((cookie));
+            }*/
+
+            input.close();
+        } catch (Exception e) {
+            Ln.e(e);
+        }
+    }
+
 
 }

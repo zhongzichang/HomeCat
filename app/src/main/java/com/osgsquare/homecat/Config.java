@@ -8,6 +8,6 @@ public class Config {
     public final static boolean isTestMode = false;
 
     public final static String BASE_URL = "http://115.28.229.143/hometalk";
-    public final static String PREFS_PRIVATE_DATA = "private.data";
-    public final static String PREFS_KEY_USER_COOKIE = "user.cookie";
+    public final static String COOKIE_FILE_NAME = "cookie_data";
+
 }

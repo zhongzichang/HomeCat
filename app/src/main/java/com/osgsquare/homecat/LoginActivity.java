@@ -13,6 +13,7 @@ import android.os.Build;
 import android.os.Bundle;
 import android.provider.ContactsContract;
 import android.text.TextUtils;
+import android.util.Log;
 import android.view.KeyEvent;
 import android.view.View;
 import android.view.View.OnClickListener;
@@ -30,6 +31,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 import roboguice.activity.RoboActivity;
+import roboguice.inject.InjectView;
 
 
 /**
@@ -46,23 +48,18 @@ public class LoginActivity extends RoboActivity implements LoaderCallbacks<Curso
     private UserLoginTask mAuthTask = null;
 
     // UI references.
-    private AutoCompleteTextView mEmailView;
-    private AutoCompleteTextView mMobileView;
-    private EditText mPasswordView;
-    private View mProgressView;
-    private View mLoginFormView;
+
+    @InjectView(R.id.mobile) AutoCompleteTextView mMobileView;
+    @InjectView(R.id.password) EditText mPasswordView;
+    @InjectView(R.id.login_progress) View mProgressView;
+    @InjectView(R.id.login_form) View mLoginFormView;
+    @InjectView(R.id.mobile_sign_in_button) Button mMobileSignInButton;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_login);
 
-        // Set up the login form.
-        mEmailView = (AutoCompleteTextView) findViewById(R.id.email);
-        populateAutoComplete();
-        mMobileView = (AutoCompleteTextView) findViewById(R.id.mobile);
-
-        mPasswordView = (EditText) findViewById(R.id.password);
         mPasswordView.setOnEditorActionListener(new TextView.OnEditorActionListener() {
             @Override
             public boolean onEditorAction(TextView textView, int id, KeyEvent keyEvent) {
@@ -74,7 +71,6 @@ public class LoginActivity extends RoboActivity implements LoaderCallbacks<Curso
             }
         });
 
-        Button mMobileSignInButton = (Button) findViewById(R.id.mobile_sign_in_button);
         mMobileSignInButton.setOnClickListener(new OnClickListener() {
             @Override
             public void onClick(View view) {
@@ -82,8 +78,6 @@ public class LoginActivity extends RoboActivity implements LoaderCallbacks<Curso
             }
         });
 
-        mLoginFormView = findViewById(R.id.login_form);
-        mProgressView = findViewById(R.id.login_progress);
     }
 
     private void populateAutoComplete() {
@@ -102,12 +96,10 @@ public class LoginActivity extends RoboActivity implements LoaderCallbacks<Curso
         }
 
         // Reset errors.
-        mEmailView.setError(null);
         mMobileView.setError(null);
         mPasswordView.setError(null);
 
         // Store values at the time of the login attempt.
-        String email = mEmailView.getText().toString();
         String mobile = mMobileView.getText().toString();
         String password = mPasswordView.getText().toString();
 
@@ -122,16 +114,6 @@ public class LoginActivity extends RoboActivity implements LoaderCallbacks<Curso
             cancel = true;
         }
 
-        // Check for a valid email address.
-        if (TextUtils.isEmpty(email)) {
-            mEmailView.setError(getString(R.string.error_field_required));
-            focusView = mEmailView;
-            cancel = true;
-        } else if (!isEmailValid(email)) {
-            mEmailView.setError(getString(R.string.error_invalid_email));
-            focusView = mEmailView;
-            cancel = true;
-        }
 
         // Check for a valid mobile.
         if (TextUtils.isEmpty(mobile)) {
@@ -225,16 +207,13 @@ public class LoginActivity extends RoboActivity implements LoaderCallbacks<Curso
 
     @Override
     public void onLoadFinished(Loader<Cursor> cursorLoader, Cursor cursor) {
-        List<String> emails = new ArrayList<String>();
         List<String> phones = new ArrayList<String>();
         cursor.moveToFirst();
         while (!cursor.isAfterLast()) {
-            emails.add(cursor.getString(ProfileQuery.EMAIL_ADDRESS));
             phones.add(cursor.getString(ProfileQuery.PHONE_DISPLAY_NAME));
             cursor.moveToNext();
         }
 
-        addEmailsToAutoComplete(emails);
         AddPhonesToAutoComplete(phones);
 
     }
@@ -246,27 +225,15 @@ public class LoginActivity extends RoboActivity implements LoaderCallbacks<Curso
 
     private interface ProfileQuery {
         String[] PROJECTION = {
-                ContactsContract.CommonDataKinds.Email.ADDRESS,
-                ContactsContract.CommonDataKinds.Email.IS_PRIMARY,
                 ContactsContract.CommonDataKinds.Phone.DISPLAY_NAME,
                 ContactsContract.CommonDataKinds.Phone.IS_PRIMARY,
         };
 
-        int EMAIL_ADDRESS = 0;
-        int EMAIL_IS_PRIMARY = 1;
-        int PHONE_DISPLAY_NAME = 2;
-        int PHONE_IS_PRIMARY = 3;
+        int PHONE_DISPLAY_NAME = 0;
+        int PHONE_IS_PRIMARY = 1;
     }
 
 
-    private void addEmailsToAutoComplete(List<String> emailAddressCollection) {
-        //Create adapter to tell the AutoCompleteTextView what to show in its dropdown list.
-        ArrayAdapter<String> adapter =
-                new ArrayAdapter<String>(LoginActivity.this,
-                        android.R.layout.simple_dropdown_item_1line, emailAddressCollection);
-
-        mEmailView.setAdapter(adapter);
-    }
 
     private void AddPhonesToAutoComplete(List<String> phoneCollection){
         ArrayAdapter<String> adapter =
@@ -291,7 +258,13 @@ public class LoginActivity extends RoboActivity implements LoaderCallbacks<Curso
 
         @Override
         protected Boolean doInBackground(Void... params) {
-            return authAgent.login(mMobile, mPassword);
+
+            try {
+                return authAgent.login(mMobile, mPassword);
+            } catch(Exception e){
+                Log.e("MainActivity", e.getMessage(), e);
+                return false;
+            }
         }
 
         @Override

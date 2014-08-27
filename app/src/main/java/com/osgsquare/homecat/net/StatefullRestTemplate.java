@@ -21,18 +21,19 @@ import java.net.URI;
  */
 public class StatefullRestTemplate extends RestTemplate {
 
-    private final HttpClient httpClient;
     private final CookieStore cookieStore;
+    private final HttpClient httpClient;
     private final HttpContext httpContext;
     private final StatefullHttpComponentsClientHttpRequestFactory statefullHttpComponentsClientHttpRequestFactory;
+
 
     public StatefullRestTemplate()
     {
         super();
         HttpParams params = new BasicHttpParams();
         HttpClientParams.setRedirecting(params, false);
-        httpClient = new DefaultHttpClient(params);
         cookieStore = new BasicCookieStore();
+        httpClient = new DefaultHttpClient(params);
         httpContext = new BasicHttpContext();
         httpContext.setAttribute(ClientContext.COOKIE_STORE, getCookieStore());
         statefullHttpComponentsClientHttpRequestFactory =

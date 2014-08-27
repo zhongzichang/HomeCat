@@ -17,5 +17,7 @@ public class AgentModule extends AbstractModule {
     public void configure(){
         bind(IAuthAgent.class).to(AuthAgent.class);
         bind(RestTemplate.class).toInstance(RestHelper.createStatefulTemplate());
+        //bind(CookieStore.class).toInstance(new BasicCookieStore());
+
     }
 }
