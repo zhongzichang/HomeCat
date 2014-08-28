@@ -6,4 +6,5 @@ package com.osgsquare.homecat.agents;
 public interface IAuthAgent {
     boolean check() throws  Exception;
     boolean login(String mobile, String password) throws Exception;
+    boolean logout() throws Exception;
 }

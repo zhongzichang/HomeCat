@@ -13,7 +13,6 @@ import android.os.Build;
 import android.os.Bundle;
 import android.provider.ContactsContract;
 import android.text.TextUtils;
-import android.util.Log;
 import android.view.KeyEvent;
 import android.view.View;
 import android.view.View.OnClickListener;
@@ -32,6 +31,7 @@ import java.util.List;
 
 import roboguice.activity.RoboActivity;
 import roboguice.inject.InjectView;
+import roboguice.util.Ln;
 
 
 /**
@@ -59,7 +59,6 @@ public class LoginActivity extends RoboActivity implements LoaderCallbacks<Curso
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_login);
-
         mPasswordView.setOnEditorActionListener(new TextView.OnEditorActionListener() {
             @Override
             public boolean onEditorAction(TextView textView, int id, KeyEvent keyEvent) {
@@ -70,14 +69,13 @@ public class LoginActivity extends RoboActivity implements LoaderCallbacks<Curso
                 return false;
             }
         });
-
         mMobileSignInButton.setOnClickListener(new OnClickListener() {
             @Override
             public void onClick(View view) {
                 attemptLogin();
             }
         });
-
+        populateAutoComplete();
     }
 
     private void populateAutoComplete() {
@@ -137,10 +135,6 @@ public class LoginActivity extends RoboActivity implements LoaderCallbacks<Curso
             mAuthTask = new UserLoginTask(mobile, password);
             mAuthTask.execute((Void) null);
         }
-    }
-    private boolean isEmailValid(String email) {
-        //TODO: Replace this with your own logic
-        return email.contains("@");
     }
 
     private boolean isMobileValid(String mobile){
@@ -262,7 +256,7 @@ public class LoginActivity extends RoboActivity implements LoaderCallbacks<Curso
             try {
                 return authAgent.login(mMobile, mPassword);
             } catch(Exception e){
-                Log.e("MainActivity", e.getMessage(), e);
+                Ln.e(e);
                 return false;
             }
         }

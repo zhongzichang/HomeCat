@@ -35,7 +35,6 @@ public class AuthAgent implements IAuthAgent {
 
         final String url = Config.BASE_URL + "/check";
         HttpEntity reqEntity = RestHelper.createEntity();
-        //RestTemplate restTemplate = RestHelper.createStatefulTemplate();
 
         try {
             ResponseEntity<AuthCheckResult> response = restTemplate.exchange(url, HttpMethod.GET, reqEntity, AuthCheckResult.class);
@@ -61,10 +60,25 @@ public class AuthAgent implements IAuthAgent {
         Ln.d(this, "mobile:"+mobile+";password:" + password);
         HttpEntity reqEntity = RestHelper.createEntity(body);
 
-        //RestTemplate restTemplate = RestHelper.createStatefulTemplate();
-
         try {
             ResponseEntity<Result> response = restTemplate.exchange(url, HttpMethod.POST, reqEntity, Result.class);
+            Result result = response.getBody();
+            return result.success;
+        } catch (HttpStatusCodeException e){
+            String errorPayload = e.getResponseBodyAsString();
+            RestErrorResource error = objectMapper.readValue(errorPayload, RestErrorResource.class);
+            throw new RestClientException("[" + error.getCode() + "] " + error.getMessage());
+        }
+    }
+
+    @Override
+    public boolean logout() throws Exception {
+
+        final String url = Config.BASE_URL + "/logout";
+        HttpEntity reqEntity = RestHelper.createEntity();
+
+        try {
+            ResponseEntity<Result> response = restTemplate.exchange(url, HttpMethod.GET, reqEntity, Result.class);
             Result result = response.getBody();
             return result.success;
         } catch (HttpStatusCodeException e){

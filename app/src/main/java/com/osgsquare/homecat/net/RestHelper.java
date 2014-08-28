@@ -70,7 +70,7 @@ public class RestHelper {
 
         List<Cookie> cookies = cs.getCookies();
         for(Cookie cookie : cookies) {
-            Ln.i("Store cookie === " + cookie.getName() + ":" + cookie.getValue());
+            Ln.d("== Store cookie " + cookie.getName() + ":" + cookie.getValue());
             output.writeObject(new SerializableCookie((BasicClientCookie)cookie));
         }
     }
@@ -80,7 +80,7 @@ public class RestHelper {
         try {
             SerializableCookie cookie = null;
             while ((cookie = (SerializableCookie) input.readObject()) != null) {
-                Ln.i("Restore cookie === " + cookie.getName() + ":" + cookie.getValue());
+                Ln.d("==  Restore cookie" + cookie.getName() + ":" + cookie.getValue());
                 cs.addCookie((cookie.toBasicClientCookie()));
             }
         } catch(EOFException e){
