@@ -1,4 +1,4 @@
-package com.osgsquare.homecat;
+package com.osgsquare.homecat.fragment;
 
 import android.os.Bundle;
 import android.app.Fragment;
@@ -12,8 +12,8 @@ import com.osgsquare.homecat.dummy.DummyContent;
 
 /**
  * A fragment representing a single Item detail screen.
- * This fragment is either contained in a {@link ItemListActivity}
- * in two-pane mode (on tablets) or a {@link ItemDetailActivity}
+ * This fragment is either contained in a {@link com.osgsquare.homecat.ItemListActivity}
+ * in two-pane mode (on tablets) or a {@link com.osgsquare.homecat.ItemDetailActivity}
  * on handsets.
  */
 public class ItemDetailFragment extends Fragment {

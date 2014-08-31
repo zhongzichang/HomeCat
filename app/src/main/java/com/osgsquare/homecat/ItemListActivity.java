@@ -5,7 +5,8 @@ import android.os.Bundle;
 import android.app.Activity;
 
 
-import com.osgsquare.homecat.R;
+import com.osgsquare.homecat.fragment.ItemDetailFragment;
+import com.osgsquare.homecat.fragment.ItemListFragment;
 
 /**
  * An activity representing a list of Items. This activity
@@ -16,11 +17,11 @@ import com.osgsquare.homecat.R;
  * item details side-by-side using two vertical panes.
  * <p>
  * The activity makes heavy use of fragments. The list of items is a
- * {@link ItemListFragment} and the item details
- * (if present) is a {@link ItemDetailFragment}.
+ * {@link com.osgsquare.homecat.fragment.ItemListFragment} and the item details
+ * (if present) is a {@link com.osgsquare.homecat.fragment.ItemDetailFragment}.
  * <p>
  * This activity also implements the required
- * {@link ItemListFragment.Callbacks} interface
+ * {@link com.osgsquare.homecat.fragment.ItemListFragment.Callbacks} interface
  * to listen for item selections.
  */
 public class ItemListActivity extends Activity

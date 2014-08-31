@@ -5,7 +5,8 @@ import android.os.Bundle;
 import android.app.Activity;
 import android.support.v4.app.NavUtils;
 import android.view.MenuItem;
-import com.osgsquare.homecat.R;
+
+import com.osgsquare.homecat.fragment.ItemDetailFragment;
 
 /**
  * An activity representing a single Item detail screen. This
@@ -14,7 +15,7 @@ import com.osgsquare.homecat.R;
  * in a {@link ItemListActivity}.
  * <p>
  * This activity is mostly just a 'shell' activity containing nothing
- * more than a {@link ItemDetailFragment}.
+ * more than a {@link com.osgsquare.homecat.fragment.ItemDetailFragment}.
  */
 public class ItemDetailActivity extends Activity {
 
