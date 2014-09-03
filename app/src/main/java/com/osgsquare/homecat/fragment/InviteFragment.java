@@ -13,23 +13,19 @@ import android.view.Gravity;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.LinearLayout.LayoutParams;
+import android.widget.LinearLayout;
 import android.widget.ListView;
 import android.widget.ProgressBar;
 
 import com.osgsquare.homecat.R;
-import com.osgsquare.homecat.agents.IGroupAgent;
 
 import roboguice.fragment.RoboListFragment;
 import roboguice.util.Ln;
 
 /**
- * Created by zzc on 8/31/14.
+ * Created by zzc on 9/4/14.
  */
-public class GroupsFragment extends RoboListFragment implements LoaderManager.LoaderCallbacks<Cursor>{
-
-    private IGroupAgent groupAgent;
-
+public class InviteFragment extends RoboListFragment implements LoaderManager.LoaderCallbacks<Cursor>{
 
     // This is the Adapter being used to display the list's data
     SimpleCursorAdapter mAdapter;
@@ -59,8 +55,8 @@ public class GroupsFragment extends RoboListFragment implements LoaderManager.Lo
         // Create a progress bar to display while the list loads
         mProgress = (ProgressBar) activity.findViewById(R.id.progress_bar);
 
-        mProgress.setLayoutParams(new LayoutParams(LayoutParams.WRAP_CONTENT,
-                LayoutParams.WRAP_CONTENT, Gravity.CENTER));
+        mProgress.setLayoutParams(new LinearLayout.LayoutParams(LinearLayout.LayoutParams.WRAP_CONTENT,
+                LinearLayout.LayoutParams.WRAP_CONTENT, Gravity.CENTER));
         mProgress.setIndeterminate(true);
 
 
