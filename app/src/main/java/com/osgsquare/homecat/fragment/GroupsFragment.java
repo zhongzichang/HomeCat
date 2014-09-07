@@ -27,16 +27,33 @@ import roboguice.util.Ln;
  */
 public class GroupsFragment extends RoboListFragment {
 
+    public interface OnFragmentInteractionListener {
+        public void onFragmentInteraction(Group group);
+    }
+
     @Inject
     private IGroupAgent groupAgent;
-
-
-    // This is the Adapter being used to display the list's data
-    ArrayAdapter<Group> groupArrayAdapter;
-
-
+    private OnFragmentInteractionListener listener;
+    private ArrayAdapter<Group> groupArrayAdapter;
     private ProgressBar mProgress;
     private int mProgressStatus = 0;
+
+    @Override
+    public void onAttach(Activity activity) {
+        super.onAttach(activity);
+        try {
+            listener = (OnFragmentInteractionListener) activity;
+        } catch (ClassCastException e) {
+            throw new ClassCastException(activity.toString()
+                    + " must implement OnFragmentInteractionListener");
+        }
+    }
+
+    @Override
+    public void onDetach(){
+        listener = null;
+        super.onDetach();
+    }
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
@@ -60,18 +77,15 @@ public class GroupsFragment extends RoboListFragment {
         mProgress.setLayoutParams(new LayoutParams(LayoutParams.WRAP_CONTENT,
                 LayoutParams.WRAP_CONTENT, Gravity.CENTER));
         mProgress.setIndeterminate(true);
-
-
-
-
         return view;
     }
-
     // {!end loader}
 
     @Override
     public void onListItemClick(ListView l, View v, int position, long id) {
         // Do something when a list item is clicked
+        Group group = (Group)l.getItemAtPosition(position);
+        listener.onFragmentInteraction(group);
     }
 
 
@@ -109,4 +123,5 @@ public class GroupsFragment extends RoboListFragment {
             }
         }
     }
+
 }

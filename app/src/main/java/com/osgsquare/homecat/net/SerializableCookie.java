@@ -1,76 +1,55 @@
 package com.osgsquare.homecat.net;
-
+import org.apache.http.cookie.Cookie;
 import org.apache.http.impl.cookie.BasicClientCookie;
 
+import java.io.IOException;
+import java.io.ObjectInputStream;
+import java.io.ObjectOutputStream;
 import java.io.Serializable;
 import java.util.Date;
 
 /**
- * Created by zhongzichang on 8/27/14.
+ * A wrapper class around {@link Cookie} and/or {@link BasicClientCookie} designed for use in {@link
+ * PersistentCookieStore}.
  */
 public class SerializableCookie implements Serializable {
+    private static final long serialVersionUID = 6374381828722046732L;
 
-    private static final String EXPIRES_KEY = "expires";
+    private transient final Cookie cookie;
+    private transient BasicClientCookie clientCookie;
 
-    private static final long serialVersionUID = 1L;
-
-    private String domain;
-    private String value;
-    private String name;
-    private String comment;
-    private Date expiryDate;
-    private String path;
-
-    private String expiryDateString;
-
-    public SerializableCookie(BasicClientCookie cookie){
-        this.domain = cookie.getDomain();
-        this.value =  cookie.getValue();
-        this.name = cookie.getName();
-        this.comment = cookie.getComment();
-        this.expiryDate = cookie.getExpiryDate();
-        this.path = cookie.getPath();
-        this.expiryDateString = cookie.getAttribute(EXPIRES_KEY);
+    public SerializableCookie(Cookie cookie) {
+        this.cookie = cookie;
     }
 
-    public BasicClientCookie toBasicClientCookie() {
-        BasicClientCookie basicClientCookie = new BasicClientCookie(this.getName(), this.getValue());
-        basicClientCookie.setDomain(this.getDomain());
-        basicClientCookie.setComment(this.getComment());
-        basicClientCookie.setExpiryDate(this.getExpiryDate());
-        basicClientCookie.setPath(this.getPath());
-        basicClientCookie.setAttribute(BasicClientCookie.DOMAIN_ATTR, this.getDomain());
-        basicClientCookie.setAttribute(BasicClientCookie.PATH_ATTR, this.getPath());
-        basicClientCookie.setAttribute(EXPIRES_KEY, this.getExpiryDateString());
-        return basicClientCookie;
+    public Cookie getCookie() {
+        Cookie bestCookie = cookie;
+        if (clientCookie != null) {
+            bestCookie = clientCookie;
+        }
+        return bestCookie;
     }
 
-    public String getDomain() {
-        return domain;
+    private void writeObject(ObjectOutputStream out) throws IOException {
+        out.writeObject(cookie.getName());
+        out.writeObject(cookie.getValue());
+        out.writeObject(cookie.getComment());
+        out.writeObject(cookie.getDomain());
+        out.writeObject(cookie.getExpiryDate());
+        out.writeObject(cookie.getPath());
+        out.writeInt(cookie.getVersion());
+        out.writeBoolean(cookie.isSecure());
     }
 
-    public String getValue() {
-        return value;
+    private void readObject(ObjectInputStream in) throws IOException, ClassNotFoundException {
+        String name = (String) in.readObject();
+        String value = (String) in.readObject();
+        clientCookie = new BasicClientCookie(name, value);
+        clientCookie.setComment((String) in.readObject());
+        clientCookie.setDomain((String) in.readObject());
+        clientCookie.setExpiryDate((Date) in.readObject());
+        clientCookie.setPath((String) in.readObject());
+        clientCookie.setVersion(in.readInt());
+        clientCookie.setSecure(in.readBoolean());
     }
-
-    public String getName() {
-        return name;
-    }
-
-    public String getComment() {
-        return comment;
-    }
-
-    public Date getExpiryDate() {
-        return expiryDate;
-    }
-
-    public String getPath() {
-        return path;
-    }
-
-    public String getExpiryDateString() {
-        return expiryDateString;
-    }
-
 }

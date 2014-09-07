@@ -44,6 +44,12 @@
             android:name=".activity.GroupTalkActivity"
             android:label="@string/title_activity_group_talk" >
         </activity>
+
+        <service
+            android:name=".service.MessageService"
+            android:enabled="true"
+            android:exported="true" >
+        </service>
     </application>
 
     <!-- To auto-complete the email text field in the login form with the user's emails -->

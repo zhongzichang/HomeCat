@@ -5,8 +5,10 @@ import com.osgsquare.homecat.agents.IAuthAgent;
 import com.osgsquare.homecat.agents.IGroupAgent;
 import com.osgsquare.homecat.agents.impl.AuthAgent;
 import com.osgsquare.homecat.agents.impl.GroupAgent;
-import com.osgsquare.homecat.net.RestHelper;
+import com.osgsquare.homecat.net.PersistentCookieStore;
+import com.osgsquare.homecat.net.StatefullRestTemplate;
 
+import org.apache.http.client.CookieStore;
 import org.springframework.web.client.RestTemplate;
 
 /**
@@ -14,12 +16,12 @@ import org.springframework.web.client.RestTemplate;
  */
 public class AgentModule extends AbstractModule {
 
-
     @Override
     public void configure(){
+        bind(CookieStore.class).to(PersistentCookieStore.class);
+        bind(RestTemplate.class).toInstance(new StatefullRestTemplate());
         bind(IAuthAgent.class).to(AuthAgent.class);
         bind(IGroupAgent.class).to(GroupAgent.class);
-        bind(RestTemplate.class).toInstance(RestHelper.createStatefulTemplate());
 
     }
 }

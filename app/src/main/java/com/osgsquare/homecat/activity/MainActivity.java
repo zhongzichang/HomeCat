@@ -1,6 +1,5 @@
 package com.osgsquare.homecat.activity;
 
-import android.content.Context;
 import android.content.Intent;
 import android.os.AsyncTask;
 import android.os.Bundle;
@@ -11,40 +10,26 @@ import android.view.Menu;
 import android.view.MenuItem;
 
 import com.google.inject.Inject;
-import com.osgsquare.homecat.Config;
 import com.osgsquare.homecat.R;
 import com.osgsquare.homecat.agents.IAuthAgent;
+import com.osgsquare.homecat.fragment.GroupTalkFragment;
+import com.osgsquare.homecat.fragment.GroupsFragment;
 import com.osgsquare.homecat.fragment.PagerFragment;
-import com.osgsquare.homecat.net.RestHelper;
-import com.osgsquare.homecat.net.StatefullRestTemplate;
-
-import org.apache.http.client.CookieStore;
-import org.springframework.web.client.RestTemplate;
-
-import java.io.File;
-import java.io.FileInputStream;
-import java.io.FileOutputStream;
-import java.io.ObjectInput;
-import java.io.ObjectInputStream;
-import java.io.ObjectOutput;
-import java.io.ObjectOutputStream;
+import com.osgsquare.homecat.model.Group;
 
 import roboguice.activity.RoboFragmentActivity;
 import roboguice.util.Ln;
 
 
-public class MainActivity extends RoboFragmentActivity {
+public class MainActivity extends RoboFragmentActivity implements GroupsFragment.OnFragmentInteractionListener {
 
     @Inject
     IAuthAgent authAgent;
-    @Inject
-    RestTemplate restTemplate;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
-        restoreCookie();
 
     }
 
@@ -64,7 +49,6 @@ public class MainActivity extends RoboFragmentActivity {
 
     @Override
     public void onDestroy(){
-        storeCookie();
         super.onDestroy();
     }
 
@@ -122,35 +106,8 @@ public class MainActivity extends RoboFragmentActivity {
         }
     }
 
-    private void storeCookie() {
-        try {
-            CookieStore cookieStore = ((StatefullRestTemplate) restTemplate).getCookieStore();
-            FileOutputStream fos = openFileOutput(Config.COOKIE_FILE_NAME, Context.MODE_PRIVATE);
-            ObjectOutput output = new ObjectOutputStream(fos);
-            RestHelper.storeCookies(cookieStore, output);
-            output.close();
-        } catch (Exception e) {
-            Ln.e(e);
-        }
-    }
 
-    private void restoreCookie() {
-        try {
-            File file = new File(getFilesDir(), Config.COOKIE_FILE_NAME);
-            if (file.exists()) {
-                CookieStore cookieStore = ((StatefullRestTemplate) restTemplate).getCookieStore();
-                FileInputStream fis = openFileInput(Config.COOKIE_FILE_NAME);
-                ObjectInput input = new ObjectInputStream(fis);
-                RestHelper.restoreCookies(cookieStore, input);
-                input.close();
-            }
-        } catch (Exception e) {
-            Ln.e(e);
-        }
-    }
-
-
-    // ! menu ------
+    // {! begin menu }
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
         // Inflate the menu; this adds items to the action bar if it is present.
@@ -173,7 +130,24 @@ public class MainActivity extends RoboFragmentActivity {
         return super.onOptionsItemSelected(item);
     }
 
-    // menu ------
+    // {!end menu}
+
+    // {! begin implements GroupsFragment.OnFragmentInteractionListener }
+    @Override
+    public void onFragmentInteraction(Group group) {
+        // open group talk view
+        openGroupTalkView();
+    }
+    // {! end}
+
+
+    private void openGroupTalkView(){
+        FragmentManager fragmentManager = getSupportFragmentManager();
+        FragmentTransaction fragmentTransaction = fragmentManager.beginTransaction();
+        GroupTalkFragment fragment = new GroupTalkFragment();
+        fragmentTransaction.replace(R.id.container, fragment);
+        fragmentTransaction.commit();
+    }
 
 
 }
