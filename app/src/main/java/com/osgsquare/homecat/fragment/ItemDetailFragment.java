@@ -12,8 +12,8 @@ import com.osgsquare.homecat.dummy.DummyContent;
 
 /**
  * A fragment representing a single Item detail screen.
- * This fragment is either contained in a {@link com.osgsquare.homecat.ItemListActivity}
- * in two-pane mode (on tablets) or a {@link com.osgsquare.homecat.ItemDetailActivity}
+ * This fragment is either contained in a {@link com.osgsquare.homecat.activity.ItemListActivity}
+ * in two-pane mode (on tablets) or a {@link com.osgsquare.homecat.activity.ItemDetailActivity}
  * on handsets.
  */
 public class ItemDetailFragment extends Fragment {

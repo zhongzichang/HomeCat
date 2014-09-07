@@ -1,10 +1,11 @@
-package com.osgsquare.homecat;
+package com.osgsquare.homecat.activity;
 
 import android.content.Intent;
 import android.os.Bundle;
 import android.app.Activity;
 
 
+import com.osgsquare.homecat.R;
 import com.osgsquare.homecat.fragment.ItemDetailFragment;
 import com.osgsquare.homecat.fragment.ItemListFragment;
 

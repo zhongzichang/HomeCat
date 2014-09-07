@@ -1,4 +1,4 @@
-package com.osgsquare.homecat;
+package com.osgsquare.homecat.activity;
 
 import android.animation.Animator;
 import android.animation.AnimatorListenerAdapter;
@@ -24,6 +24,7 @@ import android.widget.EditText;
 import android.widget.TextView;
 
 import com.google.inject.Inject;
+import com.osgsquare.homecat.R;
 import com.osgsquare.homecat.agents.IAuthAgent;
 
 import java.util.ArrayList;
@@ -133,7 +134,7 @@ public class LoginActivity extends RoboActivity implements LoaderCallbacks<Curso
             // perform the user login attempt.
             showProgress(true);
             mAuthTask = new UserLoginTask(mobile, password);
-            mAuthTask.execute((Void) null);
+            mAuthTask.execute();
         }
     }
 

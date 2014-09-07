@@ -8,7 +8,7 @@
     android:divider="?android:attr/dividerHorizontal"
     android:orientation="horizontal"
     android:showDividers="middle"
-    tools:context="com.osgsquare.homecat.ItemListActivity">
+    tools:context="com.osgsquare.homecat.activity.ItemListActivity">
 
     <!--
     This layout is a two-pane layout for the Items
