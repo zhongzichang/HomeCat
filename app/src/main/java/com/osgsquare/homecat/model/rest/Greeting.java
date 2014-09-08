@@ -1,4 +1,4 @@
-package com.osgsquare.homecat.model;
+package com.osgsquare.homecat.model.rest;
 
 /**
  * Created by zzc on 8/13/14.

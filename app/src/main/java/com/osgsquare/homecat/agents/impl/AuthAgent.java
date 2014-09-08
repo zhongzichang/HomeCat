@@ -4,8 +4,8 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import com.google.inject.Inject;
 import com.osgsquare.homecat.Config;
 import com.osgsquare.homecat.agents.IAuthAgent;
-import com.osgsquare.homecat.model.AuthCheckResult;
-import com.osgsquare.homecat.model.Result;
+import com.osgsquare.homecat.model.rest.AuthCheckResult;
+import com.osgsquare.homecat.model.rest.Result;
 import com.osgsquare.homecat.net.RestErrorResource;
 import com.osgsquare.homecat.net.RestHelper;
 

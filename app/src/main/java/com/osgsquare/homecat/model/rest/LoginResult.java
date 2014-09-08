@@ -1,15 +1,14 @@
-package com.osgsquare.homecat.model;
+package com.osgsquare.homecat.model.rest;
 
 /**
- * Created by zhongzichang on 8/20/14.
+ * Created by zzc on 8/26/14.
  */
-public class AuthCheckResult {
-
+public class LoginResult {
     public boolean logined;
 
     @Override
     public String toString() {
-        return "AuthCheckResult{" +
+        return "LoginResult{" +
                 "logined=" + logined +
                 '}';
     }
