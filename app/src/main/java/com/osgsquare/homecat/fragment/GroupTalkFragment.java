@@ -18,6 +18,7 @@ import android.widget.TextView;
 
 import com.osgsquare.homecat.R;
 import com.osgsquare.homecat.model.ws.Message;
+import com.osgsquare.homecat.model.ws.TextMessage;
 import com.osgsquare.homecat.service.MessageService;
 
 import roboguice.fragment.RoboFragment;
@@ -64,11 +65,17 @@ public class GroupTalkFragment extends RoboFragment {
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
         // Inflate the layout for this fragment
+        return inflater.inflate(R.layout.fragment_group_talk, container, false);
+    }
+
+    @Override
+    public void onViewCreated(View view, Bundle savedInstanceState) {
+        super.onViewCreated(view, savedInstanceState);
         messageEditText.setOnEditorActionListener(new TextView.OnEditorActionListener() {
             @Override
             public boolean onEditorAction(TextView textView, int id, KeyEvent keyEvent) {
                 if (id == R.id.login || id == EditorInfo.IME_NULL) {
-                    //attemptLogin();
+                    sendMessage();
                     return true;
                 }
                 return false;
@@ -77,10 +84,9 @@ public class GroupTalkFragment extends RoboFragment {
         sendButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                //attemptLogin();
+                sendMessage();
             }
         });
-        return inflater.inflate(R.layout.fragment_group_talk, container, false);
     }
 
     @Override
@@ -122,8 +128,7 @@ public class GroupTalkFragment extends RoboFragment {
 
     private void sendMessage(){
         String text = messageEditText.getText().toString();
-        Message message = new Message();
-
+        Message message = new TextMessage(Message.TEXT, text);
         service.send(message);
     }
 

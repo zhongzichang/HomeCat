@@ -39,12 +39,12 @@ public class MessageService extends Service {
     }
 
     public void send(Message message){
-        Ln.d(this, message);
-//        try {
-//            webSocketClient.send(mapper.writeValueAsString(message));
-//        } catch (Exception e) {
-//            Ln.e(e);
-//        }
+        try {
+            Ln.d(mapper.writeValueAsString(message));
+            //webSocketClient.send(mapper.writeValueAsString(message));
+        } catch (Exception e) {
+            Ln.e(e);
+        }
     }
 
     private void connectWebSocket() {

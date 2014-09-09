@@ -5,7 +5,17 @@ package com.osgsquare.homecat.model.ws;
  */
 public class Message {
 
-    private String type;
-    private Object object;
+    public static final int TEXT = 1;
+    public static final int IMAGE = 2;
+    public static final int AUDIO = 3;
+
+    private int type;
+    public int getType() {
+        return type;
+    }
+
+    public void setType(int type) {
+        this.type = type;
+    }
 
 }
