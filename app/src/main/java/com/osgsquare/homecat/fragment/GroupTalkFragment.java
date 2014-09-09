@@ -17,6 +17,7 @@ import android.widget.EditText;
 import android.widget.TextView;
 
 import com.osgsquare.homecat.R;
+import com.osgsquare.homecat.model.ws.Message;
 import com.osgsquare.homecat.service.MessageService;
 
 import roboguice.fragment.RoboFragment;
@@ -56,6 +57,7 @@ public class GroupTalkFragment extends RoboFragment {
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+
     }
 
     @Override
@@ -104,15 +106,25 @@ public class GroupTalkFragment extends RoboFragment {
     @Override
     public void onAttach(Activity activity) {
         super.onAttach(activity);
+        Intent intent = new Intent(activity, MessageService.class);
+        activity.bindService(intent, connection, Context.BIND_AUTO_CREATE);
     }
 
     @Override
     public void onDetach() {
         super.onDetach();
+        // Unbind from the service
+        if (bound) {
+            getActivity().unbindService(connection);
+            bound = false;
+        }
     }
 
     private void sendMessage(){
-//TODO
+        String text = messageEditText.getText().toString();
+        Message message = new Message();
+
+        service.send(message);
     }
 
 }
