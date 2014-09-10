@@ -25,48 +25,53 @@ public class MessageService extends Service {
             return MessageService.this;
         }
     }
+
     // Binder given to clients
     private final IBinder binder = new LocalBinder();
     private WebSocketClient webSocketClient;
     private ObjectMapper mapper = new ObjectMapper();
+    private URI uri = null;
 
     public MessageService() {
     }
 
     @Override
     public IBinder onBind(Intent intent) {
+        Ln.i("onBind");
+        attempConnectWebSocket();
         return binder;
     }
 
-    public void send(Message message){
+    public void send(Message message) {
         try {
             Ln.d(mapper.writeValueAsString(message));
-            //webSocketClient.send(mapper.writeValueAsString(message));
+            webSocketClient.send(mapper.writeValueAsString(message));
         } catch (Exception e) {
             Ln.e(e);
         }
     }
 
-    private void connectWebSocket() {
+    private void attempConnectWebSocket() {
 
-        URI uri;
-        try {
-            uri = new URI("ws://www.osgsquare.com:8080");
-        } catch (URISyntaxException e) {
-            e.printStackTrace();
-            return;
-        }
-
-        webSocketClient = new WebSocketClient(uri) {
-            @Override
-            public void onOpen(ServerHandshake serverHandshake) {
-                Ln.i(this, "Websocket Opened");
-                webSocketClient.send("Hello from " + Build.MANUFACTURER + " " + Build.MODEL);
+        if (uri == null)
+            try {
+                uri = new URI("ws://www.osgsquare.com:7778");
+            } catch (URISyntaxException e) {
+                e.printStackTrace();
+                return;
             }
 
-            @Override
-            public void onMessage(String s) {
-                final String message = s;
+        if (webSocketClient == null) {
+            webSocketClient = new WebSocketClient(uri) {
+                @Override
+                public void onOpen(ServerHandshake serverHandshake) {
+                    Ln.i("Websocket Opened");
+                    webSocketClient.send("Hello from " + Build.MANUFACTURER + " " + Build.MODEL);
+                }
+
+                @Override
+                public void onMessage(String s) {
+                    final String message = s;
 //                runOnUiThread(new Runnable() {
 //                    @Override
 //                    public void run() {
@@ -74,19 +79,28 @@ public class MessageService extends Service {
 //                        textView.setText(textView.getText() + "\n" + message);
 //                    }
 //                });
-            }
+                }
 
-            @Override
-            public void onClose(int i, String s, boolean b) {
-                Ln.i(this, "Websocket Closed %s " , s);
-            }
+                @Override
+                public void onClose(int i, String s, boolean b) {
+                    Ln.i("Websocket Closed %s ", s);
+                }
 
-            @Override
-            public void onError(Exception e) {
-                Ln.i(this, "Websocket Error %s" , e.getMessage());
-            }
-        };
-        webSocketClient.connect();
+                @Override
+                public void onError(Exception e) {
+                    Ln.i("Websocket Error %s", e.getMessage());
+                }
+            };
+            webSocketClient.connect();
+        } else if (webSocketClient.getConnection().isClosed()) {
+            Ln.i("Websocket is Closed");
+        } else if (webSocketClient.getConnection().isClosing()) {
+            Ln.i("Websocket is Closing");
+        } else if (webSocketClient.getConnection().isFlushAndClose()) {
+            Ln.i("Websocket is FlushAndClose");
+        } else if (webSocketClient.getConnection().isOpen()) {
+            Ln.i("Websocket is Open");
+        }
     }
 
 
