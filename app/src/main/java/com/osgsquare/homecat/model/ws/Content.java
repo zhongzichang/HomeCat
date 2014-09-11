@@ -1,14 +1,16 @@
 package com.osgsquare.homecat.model.ws;
 
-import java.util.Arrays;
-
 /**
  * Created by zzc on 9/8/14.
  */
 public class Content {
 
+    public static final int TEXT = 1;
+    public static final int IMAGE = 2;
+    public static final int AUDIO = 3;
+
     private int type;
-    private byte[] data;
+    private String data;
 
     public int getType() {
         return type;
@@ -18,11 +20,11 @@ public class Content {
         this.type = type;
     }
 
-    public byte[] getData() {
+    public String getData() {
         return data;
     }
 
-    public void setData(byte[] data) {
+    public void setData(String data) {
         this.data = data;
     }
 
@@ -30,7 +32,7 @@ public class Content {
     public String toString() {
         return "Message{" +
                 ", type=" + type +
-                ", data=" + Arrays.toString(data) +
+                ", data=" + data +
                 '}';
     }
 }
