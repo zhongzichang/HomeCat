@@ -17,8 +17,9 @@ import android.widget.EditText;
 import android.widget.TextView;
 
 import com.osgsquare.homecat.R;
+import com.osgsquare.homecat.model.Group;
 import com.osgsquare.homecat.model.ws.Message;
-import com.osgsquare.homecat.model.ws.TextMessage;
+import com.osgsquare.homecat.model.ws.WsMessage;
 import com.osgsquare.homecat.service.MessageService;
 
 import roboguice.fragment.RoboFragment;
@@ -34,6 +35,7 @@ public class GroupTalkFragment extends RoboFragment {
 
     private MessageService service;
     private boolean bound = false;
+    private Group group;
 
     /** Defines callbacks for service binding, passed to bindService() */
     private ServiceConnection connection = new ServiceConnection() {
@@ -126,10 +128,19 @@ public class GroupTalkFragment extends RoboFragment {
         }
     }
 
+    public Group getGroup() {
+        return group;
+    }
+
+    public void setGroup(Group group) {
+        this.group = group;
+    }
+
     private void sendMessage(){
         String text = messageEditText.getText().toString();
-        Message message = new TextMessage(Message.TEXT, text);
-        service.send(message);
+        Message message = new Message(group.getId(), Message.TEXT, text);
+        service.send(new WsMessage(message));
+        messageEditText.getText().clear();
     }
 
 }

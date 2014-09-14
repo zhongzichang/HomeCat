@@ -5,17 +5,20 @@ package com.osgsquare.homecat.model.ws;
  */
 public class WsMessage {
 
-    public static final int CONTENT = 1;
-    public static final int COMMAND = 2;
 
-    private int type;
+    private String type;
     private Object body;
 
-    public int getType() {
+    public WsMessage(Object body) {
+        this.body = body;
+        this.type = body.getClass().getSimpleName();
+    }
+
+    public String getType() {
         return type;
     }
 
-    public void setType(int type) {
+    public void setType(String type) {
         this.type = type;
     }
 

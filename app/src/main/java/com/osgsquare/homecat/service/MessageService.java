@@ -7,7 +7,7 @@ import android.os.Build;
 import android.os.IBinder;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
-import com.osgsquare.homecat.model.ws.Message;
+import com.osgsquare.homecat.model.ws.WsMessage;
 
 import org.java_websocket.client.WebSocketClient;
 import org.java_websocket.handshake.ServerHandshake;
@@ -42,13 +42,17 @@ public class MessageService extends Service {
         return binder;
     }
 
-    public void send(Message message) {
+    public void send(WsMessage msg) {
         try {
-            Ln.d(mapper.writeValueAsString(message));
-            webSocketClient.send(mapper.writeValueAsString(message));
+            Ln.d(mapper.writeValueAsString(msg));
+            webSocketClient.send(mapper.writeValueAsString(msg));
         } catch (Exception e) {
             Ln.e(e);
         }
+    }
+
+    private void onReceive(String s){
+        Ln.i(s);
     }
 
     private void attempConnectWebSocket() {
@@ -72,6 +76,7 @@ public class MessageService extends Service {
                 @Override
                 public void onMessage(String s) {
                     final String message = s;
+                    MessageService.this.onReceive(s);
 //                runOnUiThread(new Runnable() {
 //                    @Override
 //                    public void run() {

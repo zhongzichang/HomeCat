@@ -24,7 +24,9 @@ import roboguice.util.Ln;
 public class MainActivity extends RoboFragmentActivity implements GroupsFragment.OnFragmentInteractionListener {
 
     @Inject
-    IAuthAgent authAgent;
+    private IAuthAgent authAgent;
+
+    private GroupTalkFragment groupTalkFragment;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -136,16 +138,18 @@ public class MainActivity extends RoboFragmentActivity implements GroupsFragment
     @Override
     public void onFragmentInteraction(Group group) {
         // open group talk view
-        openGroupTalkView();
+        openGroupTalkView(group);
     }
     // {! end}
 
 
-    private void openGroupTalkView(){
+    private void openGroupTalkView(Group group){
         FragmentManager fragmentManager = getSupportFragmentManager();
         FragmentTransaction fragmentTransaction = fragmentManager.beginTransaction();
-        GroupTalkFragment fragment = new GroupTalkFragment();
-        fragmentTransaction.replace(R.id.container, fragment);
+        if( groupTalkFragment == null )
+            groupTalkFragment = new GroupTalkFragment();
+        groupTalkFragment.setGroup(group);
+        fragmentTransaction.replace(R.id.container, groupTalkFragment);
         fragmentTransaction.commit();
     }
 
