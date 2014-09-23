@@ -5,17 +5,17 @@ package com.osgsquare.homecat.model.ws;
  */
 public class Message {
 
-    public static final String TEXT = "text";
-    public static final String AUDIO = "audio";
+    public static final int TEXT = 1;
+    public static final int AUDIO = 2;
 
     private int sourceId;
     private int targetId;
-    private String type;
+    private int type;
     private String content;
 
     public Message(){}
 
-    public Message(int targetId, String type, String content) {
+    public Message(int targetId, int type, String content) {
         this.targetId = targetId;
         this.type = type;
         this.content = content;
@@ -37,11 +37,11 @@ public class Message {
         this.targetId = targetId;
     }
 
-    public String getType() {
+    public int getType() {
         return type;
     }
 
-    public void setType(String type) {
+    public void setType(int type) {
         this.type = type;
     }
 
